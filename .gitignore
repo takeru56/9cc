@@ -3,3 +3,5 @@
 tmp*
 micc
 *.txt
+*.out
+exam.c
