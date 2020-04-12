@@ -4,7 +4,7 @@ try() {
   expected="$1"
   input="$2"
 
-  ./micc "$input" > tmp.s
+  ./9cc "$input" > tmp.s
   gcc -o tmp tmp.s
   ./tmp
   actual="$?"
@@ -16,6 +16,6 @@ try() {
   fi
 }
 
-try 21 '5+20-4'
+try 21 '5 + 20-4'
 
 echo OK

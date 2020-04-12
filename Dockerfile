@@ -9,4 +9,4 @@ RUN apt-get update && apt-get install -y \
   make \
   git \
   binutils \
-  libc6-dev \
+  libc6-dev

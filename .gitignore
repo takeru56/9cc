@@ -1,7 +1,7 @@
 *~
 *.o
 tmp*
-micc
+9cc
 *.txt
 *.out
 exam.c
