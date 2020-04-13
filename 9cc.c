@@ -85,8 +85,6 @@ Token *tokenize(char *p) {
   Token head;
   head.next = NULL;
   Token *cur = &head;
-  printf("これ%d", *p);
-
 
   while (*p) {
     if (isspace(*p)) {
@@ -104,7 +102,6 @@ Token *tokenize(char *p) {
       cur->val = strtol(p, &p, 10);
       continue;
     }
-
     error("トークナイズできません");
   }
   new_token(TK_EOF, cur, p);
@@ -127,6 +124,7 @@ int main(int argc, char **argv) {
   while (!at_eof()) {
     if (consume('+')) {
       printf("  add rax, %d\n", expect_number());
+      continue;
     }
     expect('-');
     printf("  sub rax, %d\n", expect_number());
