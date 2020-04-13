@@ -9,13 +9,15 @@ assert() {
   ./tmp
   actual="$?"
 
+  ESC=$(printf '\033')
   if [ "$actual" = "$expected" ]; then
-    echo "$input => $actual"
+    printf "${ESC}[32m%s${ESC}[m\n" "- $input => $actual"
   else
-    echo "$input => $expected expected, but got $actual" 
+    printf "${ESC}[31m%s${ESC}[m\n" "☓ $input => $expected expected, but got $actual" 
   fi
 }
 
+assert 18 "10 +8 "
 assert 21 "5 + 20-4"
 assert 41 " 12 + 34 - 5 "
 
