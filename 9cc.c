@@ -25,13 +25,21 @@ struct Token {
 //現在着目しているトークン
 Token *token;
 
+char *user_input;
 // エラー
-void error(char *fmt, ...) {
+void error_at(char *loc, char *fmt, ...) {
   // 引数リスト
   va_list ap;
   // 可変長引数リストの初期化
   // 引数リストapにfmt以降の引数を格納
   va_start(ap, fmt);
+
+  int pos = loc - user_input;
+  fprintf(stderr, "%s\n", user_input);
+  // pos個の空白文字を出力する
+  fprintf(stderr, "%*s", pos, "");
+  fprintf(stderr, "^ ");
+
   //vfprintf(出力先ストリーム, 変換していを含んだ文字列, 引数リスト)
   // 任意のストリームに，変換指定に沿って変換された文字列を吐き出す
   vfprintf(stderr, fmt, ap);
@@ -52,13 +60,13 @@ bool consume(char op) {
 // それ以外のときはエラーを返す
 void expect(char op) {
   if (token->kind != TK_RESERVED || token->str[0] != op)
-    error("'%c'ではありません", op);
+    error_at(token->str, "'%c'ではありません", op);
   token = token->next;
 }
 
 int expect_number() {
   if (token->kind != TK_NUM)
-    error("数ではありません");
+    error_at(token->str, "数ではありません");
   int val = token->val;
   token = token->next;
   return val;
@@ -85,6 +93,7 @@ Token *tokenize(char *p) {
   Token head;
   head.next = NULL;
   Token *cur = &head;
+  user_input = p;
 
   while (*p) {
     if (isspace(*p)) {
@@ -102,7 +111,7 @@ Token *tokenize(char *p) {
       cur->val = strtol(p, &p, 10);
       continue;
     }
-    error("トークナイズできません");
+    error_at(p, "トークナイズできません");
   }
   new_token(TK_EOF, cur, p);
   return head.next;
