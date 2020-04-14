@@ -25,6 +25,39 @@ struct Token {
 //現在着目しているトークン
 Token *token;
 
+typedef enum {
+  ND_ADD, // +
+  ND_SUB, // -
+  ND_MUL, // *
+  ND_DIV, // /
+  ND_NUM, // int
+} Nodekind;
+
+typedef struct Node Node;
+
+struct Node {
+  Nodekind kind;
+  Node *lhs;
+  Node *rhs;
+  int val;
+};
+
+// 演算子ノードの作成
+Node *new_node(Nodekind kind, Node *lhs, Node *rhs) {
+  Node *node = calloc(1, sizeof(Node));
+  node->kind = kind;
+  node->lhs = lhs;
+  node->rhs = rhs;
+  return node;
+}
+
+Node *new_node_num(int val) {
+  Node *node = calloc(1,sizeof(Node));
+  node->kind = ND_NUM;
+  node->val = val;
+  return node;
+}
+
 char *user_input;
 // エラー
 void error_at(char *loc, char *fmt, ...) {
@@ -101,7 +134,7 @@ Token *tokenize(char *p) {
       continue;
     }
 
-    if (*p == '+' || *p == '-') {
+    if (strchr("+-*/()", *p)) {
       cur = new_token(TK_RESERVED, cur, p++);
       continue;
     }
@@ -117,27 +150,101 @@ Token *tokenize(char *p) {
   return head.next;
 }
 
+Node *expr();
+Node *mul();
+Node *primary();
+// 再帰下降構文解析法 LL(1)
+// 下記３つの非終端記号を関数にマップする
+// 1. expr    = mul("+" mul | "-" mul)*
+// 2. mul     = primary("*" primary | "/" primary)*
+// 3. primary = num | "(" expr ")"
+Node *expr() {
+  Node *node = mul();
+
+  for (;;) {
+    if (consume('+'))
+      node = new_node(ND_ADD, node, mul());
+    else if (consume('-'))
+      node = new_node(ND_SUB, node, mul());
+    else
+      return node;
+  }
+}
+
+Node *mul() {
+  Node *node = primary();
+
+  for (;;) {
+    if (consume('*'))
+      node = new_node(ND_MUL, node, primary());
+    else if (consume('/'))
+      node = new_node(ND_DIV, node, primary());
+    else
+      return node;
+  }
+}
+
+Node *primary() {
+  if (consume('(')) {
+    Node *node = expr();
+    expect(')');
+    return node;
+  }
+  return new_node_num(expect_number());
+}
+
+void gen(Node *node) {
+  if (node->kind == ND_NUM) {
+    printf("  push %d\n", node->val);
+    return;
+  }
+
+  gen(node->lhs);
+  gen(node->rhs);
+
+  printf("  pop rdi\n");
+  printf("  pop rax\n");
+
+  switch (node->kind) {
+    case ND_ADD:
+      printf("  add rax, rdi\n");
+      break;
+    case ND_SUB:
+      printf("  sub rax, rdi\n");
+      break;
+    case ND_MUL:
+      printf("  imul rax, rdi\n");
+      break;
+    case ND_DIV:
+      printf("  cqo\n");
+      // 符号あり除算
+      // raxの値をrdiで割り，商をrax，余りをedxに入れる
+      // rax=5, rdi=3, idiv rbx => rax=1, rbx=3, rdx=2
+      printf("  idiv rdi\n");
+      break;
+  }
+
+  printf("  push rax\n");
+}
+
 int main(int argc, char **argv) {
   if (argc != 2) {
     fprintf(stderr, "引数の個数が正しくありません\n");
     return 1;
   }
+  // トークナイズ
   token = tokenize(argv[1]);
+  // パース
+  Node *node = expr();
 
   printf(".intel_syntax noprefix\n");
   printf(".global main\n");
   printf("main:\n");
 
-  printf("  mov rax, %d\n", expect_number());
+  // コード生成
+  gen(node);
 
-  while (!at_eof()) {
-    if (consume('+')) {
-      printf("  add rax, %d\n", expect_number());
-      continue;
-    }
-    expect('-');
-    printf("  sub rax, %d\n", expect_number());
-  }
+  printf("  pop rax\n");
   printf("  ret\n");
   return 0;
 }
