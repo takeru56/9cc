@@ -144,7 +144,7 @@ Token *tokenize(char *p) {
       cur->val = strtol(p, &p, 10);
       continue;
     }
-    error_at(p, "トークナイズできません");
+    error_at(p, "トークナイズできません\n");
   }
   new_token(TK_EOF, cur, p);
   return head.next;
@@ -181,7 +181,7 @@ Node *mul() {
     if (consume('*'))
       node = new_node(ND_MUL, node,unary());
     else if (consume('/'))
-      node = new_node(ND_DIV, node,unary()) ;
+      node = new_node(ND_DIV, node,unary());
     else
       return node;
   }
