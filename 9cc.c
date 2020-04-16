@@ -6,7 +6,7 @@
 #include <string.h>
 
 typedef enum {
-  TK_RESERVED,
+  TK_RESERVED,      
   TK_NUM,
   TK_EOF,
 } TokenKind;
@@ -152,12 +152,15 @@ Token *tokenize(char *p) {
 
 Node *expr();
 Node *mul();
+Node *unary();
 Node *primary();
 // 再帰下降構文解析法 LL(1)
 // 下記３つの非終端記号を関数にマップする
 // 1. expr    = mul("+" mul | "-" mul)*
 // 2. mul     = primary("*" primary | "/" primary)*
-// 3. primary = num | "(" expr ")"
+// 3. unary   = ("+" | "-")?primary
+// 4. primary = num | "(" expr ")"
+
 Node *expr() {
   Node *node = mul();
 
@@ -172,16 +175,25 @@ Node *expr() {
 }
 
 Node *mul() {
-  Node *node = primary();
+  Node *node =unary();
 
   for (;;) {
     if (consume('*'))
-      node = new_node(ND_MUL, node, primary());
+      node = new_node(ND_MUL, node,unary());
     else if (consume('/'))
-      node = new_node(ND_DIV, node, primary());
+      node = new_node(ND_DIV, node,unary()) ;
     else
       return node;
   }
+}
+
+Node *unary() {
+  if (consume('+'))
+    return primary();
+  if (consume('-'))
+    // -x を　0-xの式に置き換える
+    return new_node(ND_SUB, new_node_num(0), primary());
+  return primary();
 }
 
 Node *primary() {

@@ -11,7 +11,7 @@ assert() {
 
   ESC=$(printf '\033')
   if [ "$actual" = "$expected" ]; then
-    printf "${ESC}[32m%s${ESC}[m\n" "- $input => $actual"
+    printf "${ESC}[32m%s${ESC}[m\n" "[PASS] $input => $actual"
   else
     printf "${ESC}[31m%s${ESC}[m\n" "☓ $input => $expected expected, but got $actual" 
   fi
@@ -28,5 +28,8 @@ assert  20 "((44+6)*2)/5"
 assert 47 '5+6*7'
 assert 15 '5*(9-6)'
 assert 4 '(3+5)/2'
+## Step6
+assert 12 '-4+16'
+assert 4  '-((8+8)/2) + 12'
 
 echo OK
