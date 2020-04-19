@@ -23,11 +23,13 @@ Token *tokenize(char *p);
 //                         Parser
 //=========================
 typedef enum {
+  ND_ASSIGN,
   ND_ADD, // +
   ND_SUB, // -
   ND_MUL, // *
   ND_DIV, // /
   ND_NUM, // int
+  ND_LVAR, // lacal variable
   ND_LT, // <
   ND_LE, // <=
   ND_EQ, // ==
@@ -39,6 +41,7 @@ typedef struct Node {
   struct Node *lhs;
   struct Node *rhs;
   int val;
+  int offset; // 差分
 } Node;
 
 //=========================

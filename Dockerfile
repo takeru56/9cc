@@ -1,5 +1,5 @@
 FROM ubuntu:latest
-MAINTAINER username
+MAINTAINER takeru
 WORKDIR /home/projects
 
 RUN apt-get update && apt-get install -y \
