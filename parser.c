@@ -3,7 +3,7 @@
 #include <stdio.h>
 #include <stdlib.h>
 #include <string.h>
-#include "9cc.h" 
+#include "9cc.h"
 
 // 演算子ノードの作成
 Node *new_node(Nodekind kind, Node *lhs, Node *rhs) {
@@ -25,7 +25,7 @@ Node *new_node_num(int val) {
 // 次のトークンが期待している記号の時には読み進めtrueを返す
 // それ以外はfalseを返す
 bool consume(char *op) {
-  if (token->kind != TK_RESERVED || 
+  if (token->kind != TK_RESERVED ||
       strlen(op) != token->len ||
       memcmp(token->str, op, token->len))
     return false;
@@ -34,20 +34,20 @@ bool consume(char *op) {
 }
 
 Token *consume_ident() {
-  if (token->kind != TK_IDENT || 
-      strlen(token->str[0]) != token->len)
+  if (token->kind != TK_IDENT)
     return NULL;
+  Token *ident_token = token;
   token = token->next;
-  return token;
+  return ident_token;
 }
 
 // 次のトークンが期待している記号のときには読み進める
 // それ以外のときはエラーを返す
 void expect(char *op) {
- if (token->kind != TK_RESERVED || 
+ if (token->kind != TK_RESERVED ||
       strlen(op) != token->len ||
       memcmp(token->str, op, token->len))
-    error_at(token->str, "'%s'ではありません", op);
+    error_at(token->str, "'%s'ではありません!", op);
   token = token->next;
 }
 
@@ -89,10 +89,9 @@ Node *primary();
 //  primary     = num | ident | "(" expr ")"
 
 Node *code[100];
-
 void program() {
   int i = 0;
-  while (!at_eof) {
+  while (!at_eof()) {
     code[i++] = stmt();
   }
   code[i] = NULL;
@@ -105,8 +104,7 @@ Node *stmt() {
 }
 
 Node *expr() {
-  Node *node = assign();
-  return node;
+  return assign();
 }
 
 Node *assign() {
@@ -115,7 +113,7 @@ Node *assign() {
     node = new_node(ND_ASSIGN, node, assign());
   }
   return node;
-} 
+}
 
 Node *equality() {
   Node *node = relational();

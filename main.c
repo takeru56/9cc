@@ -3,7 +3,7 @@
 #include <stdio.h>
 #include <stdlib.h>
 #include <string.h>
-#include "9cc.h"  
+#include "9cc.h"
 
 Token *token;
 int main(int argc, char **argv) {
@@ -14,16 +14,24 @@ int main(int argc, char **argv) {
   // トークナイズ
   token = tokenize(argv[1]);
   // パース
-  Node *node = expr();
+  program();
 
   printf(".intel_syntax noprefix\n");
   printf(".global main\n");
   printf("main:\n");
 
-  // コード生成
-  gen(node);
+  //a-zまで26個のメモリを確保
+  printf("  push rbp\n");
+  printf("  mov rbp, rsp\n");
+  printf("  sub rsp, 208\n");
 
-  printf("  pop rax\n");
+  for (int i = 0; code[i]; i++) {
+    gen(code[i]);
+    printf("  pop rax\n");
+  }
+
+  printf("  mov rsp, rbp\n");
+  printf("  pop rbp\n");
   printf("  ret\n");
   return 0;
 }

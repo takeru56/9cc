@@ -43,11 +43,11 @@ typedef struct Node {
   int val;
   int offset; // 差分
 } Node;
-
+void program();
+extern Node *code[100];
 //=========================
 //                       Codegen
 //=========================
-Node *expr();
 void gen(Node *node);
 
 //=========================

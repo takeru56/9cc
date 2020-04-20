@@ -4,7 +4,7 @@
 #include <stdio.h>
 #include <stdlib.h>
 #include <string.h>
-#include "9cc.h" 
+#include "9cc.h"
 
 char *user_input;
 
@@ -65,7 +65,7 @@ Token *tokenize(char *p) {
       continue;
     }
 
-    if (strchr("+-*/()<>", *p)) {
+    if (strchr("+-*/()<>=;", *p)) {
       cur = new_token(TK_RESERVED, cur, p++, 1);
       continue;
     }
