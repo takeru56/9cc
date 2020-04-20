@@ -2,7 +2,8 @@
 //                      Tokenizer
 //=========================
 typedef enum {
-  TK_RESERVED,      
+  TK_RESERVED,
+  TK_IDENT,
   TK_NUM,
   TK_EOF,
 } TokenKind;
@@ -22,11 +23,13 @@ Token *tokenize(char *p);
 //                         Parser
 //=========================
 typedef enum {
+  ND_ASSIGN,
   ND_ADD, // +
   ND_SUB, // -
   ND_MUL, // *
   ND_DIV, // /
   ND_NUM, // int
+  ND_LVAR, // lacal variable
   ND_LT, // <
   ND_LE, // <=
   ND_EQ, // ==
@@ -38,12 +41,13 @@ typedef struct Node {
   struct Node *lhs;
   struct Node *rhs;
   int val;
+  int offset; // 差分
 } Node;
-
+void program();
+extern Node *code[100];
 //=========================
 //                       Codegen
 //=========================
-Node *expr();
 void gen(Node *node);
 
 //=========================
