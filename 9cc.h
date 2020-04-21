@@ -1,3 +1,8 @@
+#include <stdio.h>
+#include <stdlib.h>
+#include <stdbool.h>
+#include <string.h>
+
 //=========================
 //                      Tokenizer
 //=========================
@@ -51,6 +56,7 @@ typedef struct Node {
   int val;
   int offset; // 差分
 } Node;
+
 void program();
 extern Node *code[100];
 //=========================

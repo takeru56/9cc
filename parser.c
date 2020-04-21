@@ -1,8 +1,3 @@
-// #include <stdarg.h>
-#include <stdbool.h>
-#include <stdio.h>
-#include <stdlib.h>
-#include <string.h>
 #include "9cc.h"
 
 LVar *locals;
@@ -214,7 +209,10 @@ Node *primary() {
       lvar->next = locals;
       lvar->name = tok->str;
       lvar->len = tok->len;
-      lvar->offset = locals->offset + 8;
+       if (locals == NULL)
+         lvar->offset = 8;
+      else
+         lvar->offset = locals->offset + 8;
       node->offset = lvar->offset;
       locals = lvar;
     }

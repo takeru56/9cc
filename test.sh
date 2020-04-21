@@ -57,5 +57,6 @@ echo "## Step8"
 assert 1 'hoge=1;'
 assert 0 'a=1; b=1; c=a-b;'
 assert 2 'a=2; b=1; a;'
+assert 1 'hoge = 3; fuga = 2; hoge-fuga;'
 
 echo OK
