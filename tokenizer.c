@@ -1,9 +1,5 @@
 #include <ctype.h>
 #include <stdarg.h>
-#include <stdbool.h>
-#include <stdio.h>
-#include <stdlib.h>
-#include <string.h>
 #include "9cc.h"
 
 char *user_input;
@@ -70,8 +66,15 @@ Token *tokenize(char *p) {
       continue;
     }
 
-    if ('a' <= *p && *p <= 'z') {
-      cur = new_token(TK_IDENT, cur, p++, 1);
+    // 一文字以上のアルファベットを変数とみなす
+    if (islower(*p)) {
+      int l = 0;
+      char *top = p;
+      while (islower(*p)) {
+        p++;
+        l++;
+      }
+      cur = new_token(TK_IDENT, cur, top, l);
       continue;
     }
 

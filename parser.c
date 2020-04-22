@@ -1,9 +1,6 @@
-// #include <stdarg.h>
-#include <stdbool.h>
-#include <stdio.h>
-#include <stdlib.h>
-#include <string.h>
 #include "9cc.h"
+
+LVar *locals;
 
 // 演算子ノードの作成
 Node *new_node(Nodekind kind, Node *lhs, Node *rhs) {
@@ -41,6 +38,15 @@ Token *consume_ident() {
   return ident_token;
 }
 
+// 変数を名前で検索する。見つからなかった場合はNULLを返す。
+LVar *find_lvar(Token *tok) {
+  for (LVar *var = locals; var; var = var->next) {
+    if (var->len == tok->len && !memcmp(tok->str, var->name, var->len))
+      return var;
+  }
+  return NULL;
+}
+
 // 次のトークンが期待している記号のときには読み進める
 // それ以外のときはエラーを返す
 void expect(char *op) {
@@ -66,7 +72,7 @@ bool at_eof() {
   return token->kind == TK_EOF;
 }
 
-void   program();
+void program();
 Node *stmt();
 Node *expr();
 Node *assign();
@@ -90,6 +96,7 @@ Node *primary();
 
 Node *code[100];
 void program() {
+  locals = NULL;
   int i = 0;
   while (!at_eof()) {
     code[i++] = stmt();
@@ -120,7 +127,7 @@ Node *equality() {
 
   for (;;) {
     if (consume("==")){
-      node = new_node(ND_EQ, node, relational());  
+      node = new_node(ND_EQ, node, relational());
     } else if (consume("!=")) {
       node = new_node(ND_NE, node, relational());
     } else {
@@ -134,7 +141,7 @@ Node *relational() {
 
    for (;;) {
     if (consume("<")){
-      node = new_node(ND_LT, node, add());  
+      node = new_node(ND_LT, node, add());
     } else if (consume(">")) {
       node = new_node(ND_LT, add(), node);
     } else if (consume("<=")) {
@@ -193,7 +200,22 @@ Node *primary() {
   if (tok) {
     Node *node = calloc(1, sizeof(Node));
     node->kind = ND_LVAR;
-    node->offset = (tok->str[0] - 'a' +1) * 8;
+
+    LVar *lvar = find_lvar(tok);
+    if (lvar) {
+      node->offset = lvar->offset;
+    } else {
+      lvar = calloc(1, sizeof(LVar));
+      lvar->next = locals;
+      lvar->name = tok->str;
+      lvar->len = tok->len;
+       if (locals == NULL)
+         lvar->offset = 8;
+      else
+         lvar->offset = locals->offset + 8;
+      node->offset = lvar->offset;
+      locals = lvar;
+    }
     return node;
   }
 

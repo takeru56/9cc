@@ -1,3 +1,8 @@
+#include <stdio.h>
+#include <stdlib.h>
+#include <stdbool.h>
+#include <string.h>
+
 //=========================
 //                      Tokenizer
 //=========================
@@ -15,6 +20,14 @@ typedef struct Token {
   char *str;
   int len;
 } Token;
+
+// ローカル変数の型
+typedef struct LVar {
+  struct LVar *next; // 次の変数かNULL
+  char *name; // 変数の名前
+  int len;    // 名前の長さ
+  int offset; // RBPからのオフセット
+} LVar;
 
 void error_at(char *loc, char *fmt, ...);
 Token *tokenize(char *p);
@@ -43,6 +56,7 @@ typedef struct Node {
   int val;
   int offset; // 差分
 } Node;
+
 void program();
 extern Node *code[100];
 //=========================
