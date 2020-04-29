@@ -84,7 +84,7 @@ Node *unary();
 Node *primary();
 // 再帰下降構文解析法 LL(1)
 // program     = stmt*
-// stmt           = expr ";"
+// stmt           = expr ";" | return expr ";"
 //  expr          = asign
 //  assign       = equality ("=" assign)?
 //  equality     = relational ("==" relational | "!=" relational)
