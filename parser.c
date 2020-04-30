@@ -38,6 +38,13 @@ Token *consume_ident() {
   return ident_token;
 }
 
+bool consume_return() {
+  if (token->kind != TK_RETURN)
+    return false;
+  token = token->next;
+  return true;
+}
+
 // 変数を名前で検索する。見つからなかった場合はNULLを返す。
 LVar *find_lvar(Token *tok) {
   for (LVar *var = locals; var; var = var->next) {
@@ -105,7 +112,12 @@ void program() {
 }
 
 Node *stmt() {
-  Node *node = expr();
+  Node *node;
+  if (consume_return()) {
+    node = new_node(ND_RETURN, NULL, expr());
+  } else {
+    node = expr();
+  }
   expect(";");
   return node;
 }
@@ -131,6 +143,7 @@ Node *equality() {
     } else if (consume("!=")) {
       node = new_node(ND_NE, node, relational());
     } else {
+
       return node;
     }
   }

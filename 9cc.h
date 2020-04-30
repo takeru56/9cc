@@ -47,7 +47,8 @@ typedef enum {
   ND_LT, // <
   ND_LE, // <=
   ND_EQ, // ==
-  ND_NE // !=
+  ND_NE, // !=
+  ND_RETURN // return
 } Nodekind;
 
 typedef struct Node {

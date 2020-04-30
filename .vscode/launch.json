@@ -6,7 +6,7 @@
             "type": "cppdbg",
             "request": "launch",
             "program": "${fileDirname}/9cc",
-            "args": ["'a=2;'"],
+            "args": ["'return 1;'"],
             "cwd": "${fileDirname}",
             "preLaunchTask": "C build",
             "MIMode": "gdb",
