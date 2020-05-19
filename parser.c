@@ -45,6 +45,13 @@ bool consume_return() {
   return true;
 }
 
+bool consume_if() {
+  if (token->kind != TK_IF)
+    return false;
+  token = token->next;
+  return true;
+}
+
 // 変数を名前で検索する。見つからなかった場合はNULLを返す。
 LVar *find_lvar(Token *tok) {
   for (LVar *var = locals; var; var = var->next) {
@@ -92,6 +99,7 @@ Node *primary();
 // 再帰下降構文解析法 LL(1)
 // program     = stmt*
 // stmt           = expr ";" | return expr ";"
+//             | "if" "(" expr ")" stmt
 //  expr          = asign
 //  assign       = equality ("=" assign)?
 //  equality     = relational ("==" relational | "!=" relational)
@@ -115,6 +123,12 @@ Node *stmt() {
   Node *node;
   if (consume_return()) {
     node = new_node(ND_RETURN, NULL, expr());
+  } else if (consume_if()) {
+    expect("(");
+    Node *exp = expr();
+    expect(")");
+    node = new_node(ND_IF, exp, stmt());
+    return node;
   } else {
     node = expr();
   }

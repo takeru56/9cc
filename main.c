@@ -1,6 +1,7 @@
 #include "9cc.h"
 
 Token *token;
+int l_serial;
 int main(int argc, char **argv) {
   if (argc != 2) {
     fprintf(stderr, "引数の個数が正しくありません\n");
@@ -8,6 +9,7 @@ int main(int argc, char **argv) {
   }
   // トークナイズ
   token = tokenize(argv[1]);
+  l_serial = 0;
   // パース
   program();
 

@@ -58,9 +58,12 @@ assert 1 'hoge=1;'
 assert 0 'a=1; b=1; c=a-b;'
 assert 2 'a=2; b=1; a;'
 assert 1 'hoge = 3; fuga = 2; hoge-fuga;'
-echo "# # Step11"
+echo "## Step11"
 assert 1 'return 1;'
 assert 2 ' return 1+1;'
 assert 1 'hoge=3; fuga=2; return 3-2;'
+echo "## Step12"
+assert 2 'hoge=1; if (hoge>0)  hoge = 2;  return hoge;'
+assert 1 'hoge=1; if (hoge<0)  hoge = 2;  return hoge;'
 
 echo OK

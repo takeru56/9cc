@@ -37,6 +37,14 @@ void gen(Node *node) {
       printf("  pop rbp\n");
       printf("  ret\n");
       return;
+    case ND_IF:
+      gen(node->lhs);
+      printf("  pop rax\n");
+      printf("  cmp rax, 0\n");
+      printf("  je .Lend%d\n", l_serial);
+      gen(node->rhs);
+      printf(".Lend%d:\n", l_serial++);
+      return;
   }
 
   // 以下二項演算子

@@ -12,6 +12,7 @@ typedef enum {
   TK_NUM,
   TK_EOF,
   TK_RETURN,
+  TK_IF,
 } TokenKind;
 
 typedef struct Token {
@@ -48,7 +49,8 @@ typedef enum {
   ND_LE, // <=
   ND_EQ, // ==
   ND_NE, // !=
-  ND_RETURN // return
+  ND_RETURN, // return
+  ND_IF // if
 } Nodekind;
 
 typedef struct Node {
@@ -70,3 +72,4 @@ void gen(Node *node);
 //                       Main
 //=========================
 extern Token *token;
+extern int l_serial;
