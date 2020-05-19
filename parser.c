@@ -52,6 +52,13 @@ bool consume_if() {
   return true;
 }
 
+bool consume_else() {
+  if (token->kind != TK_ELSE)
+    return false;
+  token = token->next;
+  return true;
+}
+
 // 変数を名前で検索する。見つからなかった場合はNULLを返す。
 LVar *find_lvar(Token *tok) {
   for (LVar *var = locals; var; var = var->next) {
@@ -127,11 +134,19 @@ Node *stmt() {
     expect("(");
     Node *exp = expr();
     expect(")");
-    node = new_node(ND_IF, exp, stmt());
+
+    Node *stmt_node = stmt();
+    if (consume_else()) {
+      Node *else_node = new_node(ND_ELSE, stmt_node, stmt());
+      node = new_node(ND_IF, exp, else_node);
+    } else {
+      node = new_node(ND_IF, exp, stmt_node);
+    }
     return node;
   } else {
     node = expr();
   }
+
   expect(";");
   return node;
 }

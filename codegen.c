@@ -41,8 +41,16 @@ void gen(Node *node) {
       gen(node->lhs);
       printf("  pop rax\n");
       printf("  cmp rax, 0\n");
-      printf("  je .Lend%d\n", l_serial);
-      gen(node->rhs);
+      if (node->rhs->kind == ND_ELSE) {
+        printf("  je .Lelse%d\n", l_serial);
+        gen(node->rhs->lhs);
+        printf("  jmp .Lend%d\n", l_serial);
+        printf(".Lelse%d:\n", l_serial);
+        gen(node->rhs->rhs);
+      } else {
+        printf("  je .Lend%d\n", l_serial);
+        gen(node->rhs);
+      }
       printf(".Lend%d:\n", l_serial++);
       return;
   }

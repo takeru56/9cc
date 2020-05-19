@@ -85,6 +85,12 @@ Token *tokenize(char *p) {
       continue;
     }
 
+    if (strncmp(p, "else", 4) == 0 && !is_alnum(p[4])){
+      cur = new_token(TK_ELSE, cur, p, 4);
+      p+=4;
+      continue;
+    }
+
     // 一文字以上のアルファベットを変数とみなす
     if (islower(*p)) {
       int l = 0;

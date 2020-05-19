@@ -65,5 +65,7 @@ assert 1 'hoge=3; fuga=2; return 3-2;'
 echo "## Step12"
 assert 2 'hoge=1; if (hoge>0)  hoge = 2;  return hoge;'
 assert 1 'hoge=1; if (hoge<0)  hoge = 2;  return hoge;'
+assert 2 'hoge=1; if (hoge>0)  hoge = 2; else hoge=3; return hoge;'
+assert 3 'hoge=1; if (hoge<0)  hoge = 2; else hoge=3; return hoge;'
 
 echo OK
