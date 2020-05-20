@@ -53,6 +53,16 @@ void gen(Node *node) {
       }
       printf(".Lend%d:\n", l_serial++);
       return;
+    case ND_WHILE:
+      printf(".Lbegin%d:\n", l_serial);
+      gen(node->lhs);
+      printf("  pop rax\n");
+      printf("  cmp rax, 0\n");
+      printf("  je .Lend%d\n", l_serial);
+      gen(node->rhs);
+      printf("  jmp .Lbegin%d\n", l_serial);
+      printf(".Lend%d:\n",l_serial++);
+      return;
   }
 
   // 以下二項演算子

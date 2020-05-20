@@ -91,6 +91,12 @@ Token *tokenize(char *p) {
       continue;
     }
 
+    if (strncmp(p, "while", 5) == 0 && !is_alnum(p[5])) {
+      cur = new_token(TK_WHILE, cur, p, 5);
+      p+=5;
+      continue;
+    }
+
     // 一文字以上のアルファベットを変数とみなす
     if (islower(*p)) {
       int l = 0;

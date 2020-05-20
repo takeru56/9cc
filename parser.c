@@ -59,6 +59,13 @@ bool consume_else() {
   return true;
 }
 
+bool consume_while() {
+  if (token->kind != TK_WHILE)
+    return false;
+  token = token->next;
+  return true;
+}
+
 // 変数を名前で検索する。見つからなかった場合はNULLを返す。
 LVar *find_lvar(Token *tok) {
   for (LVar *var = locals; var; var = var->next) {
@@ -104,17 +111,18 @@ Node *mul();
 Node *unary();
 Node *primary();
 // 再帰下降構文解析法 LL(1)
-// program     = stmt*
-// stmt           = expr ";" | return expr ";"
-//             | "if" "(" expr ")" stmt
-//  expr          = asign
+// program       = stmt*
+// stmt          = expr ";" | return expr ";"
+//              | "if" "(" expr ")" stmt
+//              | "while" "(" expr ")" stmt
+//  expr         = asign
 //  assign       = equality ("=" assign)?
 //  equality     = relational ("==" relational | "!=" relational)
 //  relational   = add ("<" add | "<=" add | ">" add | ">=" add)*
-//  add           = mul("+" mul | "-" mul)*
-//  mul           = primary("*" primary | "/" primary)*
+//  add          = mul("+" mul | "-" mul)*
+//  mul          = primary("*" primary | "/" primary)*
 //  unary        = ("+" | "-")?primary
-//  primary     = num | ident | "(" expr ")"
+//  primary      = num | ident | "(" expr ")"
 
 Node *code[100];
 void program() {
@@ -142,6 +150,12 @@ Node *stmt() {
     } else {
       node = new_node(ND_IF, exp, stmt_node);
     }
+    return node;
+  } else if (consume_while()){
+    expect("(");
+    Node *exp = expr();
+    expect(")");
+    node = new_node(ND_WHILE, exp, stmt());
     return node;
   } else {
     node = expr();
