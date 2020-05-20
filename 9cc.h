@@ -4,7 +4,7 @@
 #include <string.h>
 
 //=========================
-//                      Tokenizer
+//        Tokenizer
 //=========================
 typedef enum {
   TK_RESERVED,
